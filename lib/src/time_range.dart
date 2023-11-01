@@ -16,6 +16,7 @@ class TimeRange extends StatefulWidget {
     this.timeStep = 60,
     this.fromTitle,
     this.toTitle,
+    this.hideTo = false,
     this.titlePadding = 0,
     this.initialRange,
     this.borderColor,
@@ -38,6 +39,8 @@ class TimeRange extends StatefulWidget {
   final TimeOfDay lastTime;
   final Widget? fromTitle;
   final Widget? toTitle;
+  final bool hideTo;
+
   final double titlePadding;
   final TimeRangeSelectedCallback onRangeCompleted;
   final TimeSelectedCallback? onFirstTimeSelected;
@@ -104,13 +107,14 @@ class _TimeRangeState extends State<TimeRange> {
           activeTextStyle: widget.activeTextStyle,
           alwaysUse24HourFormat: widget.alwaysUse24HourFormat,
         ),
-        if (widget.toTitle != null)
-          Padding(
-            padding: EdgeInsets.only(left: widget.titlePadding, top: 8),
-            child: widget.toTitle,
-          ),
-        const SizedBox(height: 8),
-        TimeList(
+
+          if (widget.toTitle != null && widget.hideTo == false)
+            Padding(
+              padding: EdgeInsets.only(left: widget.titlePadding, top: 8),
+              child: widget.toTitle,
+            ),
+        if (widget.hideTo == false) SizedBox(height: 8),
+        if (widget.hideTo == false)  TimeList(
           firstTime: _getFirstTimeEndHour(),
           lastTime: widget.lastTime,
           initialTime: _endHour,
@@ -145,7 +149,7 @@ class _TimeRangeState extends State<TimeRange> {
     if (_endHour != null) {
       if (_endHour!.inMinutes() <= _startHour!.inMinutes() ||
           (_endHour!.inMinutes() - _startHour!.inMinutes())
-                  .remainder(widget.timeBlock) !=
+              .remainder(widget.timeBlock) !=
               0) {
         _endHour = null;
         widget.onRangeCompleted(null);
@@ -162,6 +166,7 @@ class _TimeRangeState extends State<TimeRange> {
     }
   }
 }
+
 
 class TimeRangeResult {
   TimeRangeResult(this.start, this.end);
